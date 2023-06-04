@@ -1,5 +1,6 @@
 const statusDisplay = document.querySelector(".game-status");
 let gameActive = true;
+let gameWon = false;
 let currentPlayer = "X";
 let gameState = ["", "", "", "", "", "", "", "", "", ]
 
@@ -18,17 +19,15 @@ function makeMove(clickEvent) {
 
     updateGame(boxClicked, boxIndex);
     checkVictory(gameState);
+    if (gameActive) {switchPlayer();}
 }
 
 function updateGame(boxClicked, boxIndex) {
     gameState[boxIndex] = currentPlayer;
     boxClicked.innerHTML = currentPlayer;
-    console.log(gameState);
 }
 
 function checkVictory(gameState) {
-    let gameWon = false;
-
     // Check all 8 possible "3 in a row" combinations
     // Check horizontal "3 in a rows"
     if      ( (gameState[0] == gameState[1] && gameState[1] == gameState[2]) && (gameState[0] != "") ) {gameWon = true;}
@@ -42,12 +41,32 @@ function checkVictory(gameState) {
     else if ( (gameState[0] == gameState[4] && gameState[4] == gameState[8]) && (gameState[0] != "") ) {gameWon = true;}
     else if ( (gameState[2] == gameState[4] && gameState[4] == gameState[6]) && (gameState[2] != "") ) {gameWon = true;}
 
+    // Check for a stalemate
+    let isStalemate = true;
+    for (i = 0; i < gameState.length; i++) {
+        if (gameState[i] === "") {
+            isStalemate = false;
+        }
+    }
+
     // Activate end of game sequence
     if (gameWon) {
         gameActive = false;
         statusDisplay.innerHTML = `Player ${currentPlayer} Wins!`
-        console.log(`Player ${currentPlayer} Wins!`);
+    } else if (isStalemate) {
+        gameActive = false;
+        statusDisplay.innerHTML = `Tie Game!`
+    } else {
+        return;
+    }
+}
+
+function switchPlayer() {
+    if (currentPlayer === "X") {
+        currentPlayer = "O";
+    } else {
+        currentPlayer = "X";
     }
 
-    return;
+    statusDisplay.innerHTML = `It's ${currentPlayer}'s turn`
 }
